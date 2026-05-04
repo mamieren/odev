@@ -1,0 +1,97 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="dark">
+    <ion-title class="ion-text-center">
+      <ion-icon name="wallet-outline" style="vertical-align: middle; margin-right: 8px;"></ion-icon>
+      Cüzdanım
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="bg-light">
+  
+  <div class="top-panel">
+    <p>Aylık Toplam Gider</p>
+    <h1>{{ toplamTutar }} ₺</h1>
+  </div>
+
+  <div class="form-container">
+    <h3 class="section-title">Yeni İşlem Ekle</h3>
+    
+    <ion-item class="modern-input" lines="none">
+      <ion-icon name="document-text-outline" slot="start" color="medium"></ion-icon>
+      <ion-input placeholder="Ne için harcadın? (Örn: Market)" [(ngModel)]="harcamaAdi"></ion-input>
+    </ion-item>
+
+    <ion-item class="modern-input" lines="none">
+      <ion-icon name="cash-outline" slot="start" color="medium"></ion-icon>
+      <ion-input type="number" placeholder="Tutar (₺)" [(ngModel)]="harcamaTutari"></ion-input>
+    </ion-item>
+
+    <ion-item class="modern-input" lines="none">
+      <ion-icon name="grid-outline" slot="start" color="medium"></ion-icon>
+      <ion-select placeholder="Kategori Seçin" [(ngModel)]="harcamaKategori" interface="popover">
+        <ion-select-option value="Gıda">Gıda</ion-select-option>
+        <ion-select-option value="Ulaşım">Ulaşım</ion-select-option>
+        <ion-select-option value="Fatura">Fatura</ion-select-option>
+        <ion-select-option value="Diğer">Diğer</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-button (click)="harcamaEkle()" expand="block" shape="round" color="dark" class="add-btn">
+      Harcamayı Kaydet
+    </ion-button>
+  </div>
+
+  <div class="list-container">
+    <h3 class="section-title">Son İşlemler</h3>
+    
+    <div class="empty-state" *ngIf="harcamalar.length === 0">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <h2>Kayıt Yok</h2>
+      <p>Henüz bir harcama eklemediniz. Giderlerinizi takip etmek için yukarıdan ilk işleminizi ekleyin.</p>
+    </div>
+
+    <ion-list lines="none" class="transparent-list" *ngIf="harcamalar.length > 0">
+      <ion-item-sliding *ngFor="let harcama of harcamalar; let i = index" class="sliding-card">
+        <ion-item class="expense-card">
+          <div class="category-indicator" [ngClass]="renkGetir(harcama.kategori)"></div>
+          
+          <ion-icon [name]="ikonGetir(harcama.kategori)" slot="start" [color]="renkGetir(harcama.kategori)"></ion-icon>
+          
+          <ion-label>
+            <h2 class="expense-name">{{ harcama.adi }}</h2>
+            <p class="expense-category">{{ harcama.kategori }}</p>
+          </ion-label>
+          
+          <ion-label slot="end" class="expense-amount">
+            -{{ harcama.tutar }} ₺
+          </ion-label>
+        </ion-item>
+        
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="silmeOnayiAc(i)">
+            <ion-icon slot="start" name="trash-outline"></ion-icon>
+            Sil
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </div>
+
+  <ion-toast 
+    [isOpen]="isToastOpen"
+    [message]="toastMesaj" 
+    [color]="toastRenk"
+    [duration]="2000"
+    (didDismiss)="isToastOpen = false">
+  </ion-toast>
+
+  <ion-alert
+    [isOpen]="isAlertOpen"
+    header="İşlemi Sil"
+    message="Bu harcamayı kalıcı olarak silmek istiyor musunuz?"
+    [buttons]="alertButonlari"
+    (didDismiss)="isAlertOpen = false">
+  </ion-alert>
+
+</ion-content>
